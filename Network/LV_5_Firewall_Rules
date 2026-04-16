@@ -1,0 +1,34 @@
+## Level 5: Firewall Rule Optimization (IIS Accessibility)
+
+### Security Domain
+* **CompTIA Security+ (SY0-701) Mapping:** Domain 3.0 Hardware, Software, and Connectivity -> Objective 3.3 Configure and replace network components (Firewalls/ACLs).
+
+### The Objective
+The objective of this lab was to remediate a connectivity failure to an Internal Information Services (IIS) web server. The host was attempting to connect via **Port 443 (HTTPS)**, but the network firewall was dropping the traffic. To restore access, specific firewall rules needed to be implemented to allow traffic for encrypted (HTTPS) web services.
+
+### Technical Methodology
+* **Logical Workflow:** 1. **Symptom Identification:** Observed "IIS Website Blocked" alert.
+    2. **Configuration Audit:** Checked Network Settings and identified the target service was running on **192.168.1.150** using **Port 443**.
+    3. **Policy Gap Analysis:** Audited the "Firewall" rules and found only two Access Control List (ACL) entries for Port 80 but none were found for Port 443.
+    4. **Remediation:** Created two critical stateful rules to allow bidirectional traffic:
+        * **Port 443 (Inbound/Outbound):** Secure HTTPS traffic for the primary objective.
+    5. **Verification:** Confirmed "IIS Website Accessible" status after the firewall permitted the handshake.
+
+* **Command Execution:**
+    In a Linux environment using `iptables`, an analyst would execute the following to achieve this state:
+    ```bash
+    # Allow Inbound HTTPS traffic to the IIS Server
+    sudo iptables -A INPUT -p tcp --dport 443 -d 192.168.1.150 -j ACCEPT
+
+    # Allow Outbound established HTTPS traffic
+    sudo iptables -A OUTPUT -p tcp --sport 443 -s 192.168.1.150 -j ACCEPT
+    ```
+
+### The "Logic Gate"
+* **Rationale:** Firewalls operate on an **Implicit Deny** principle; if a rule doesn't explicitly allow the traffic, it is blocked. By defining rules specifically for Port 443 and Port 80, we enable the specific service required without opening the entire server to other potentially vulnerable ports.
+* **Security Principles:**
+    * **Principle of Least Privilege:** We only opened the ports necessary for the web service (80/443), keeping all other ports (like SSH or RDP) shielded.
+    * **Defense in Depth:** The firewall acts as a perimeter guard, ensuring only authorized protocol types reach the application layer.
+
+### Aerospace Precision Parallel
+> This is a digital version of a **Lockout/Tagout (LOTO)** or a **Safety Bypass Interlock**. In aerospace maintenance, we don't remove every safety barrier to test a system; we only bypass or open the specific "gate" required for the specific test (e.g., opening a specific fuel valve while keeping the ignition circuit grounded). Firewall rules ensure that "flow" only occurs through authorized channels, preventing a "catastrophic surge" of unauthorized traffic.
