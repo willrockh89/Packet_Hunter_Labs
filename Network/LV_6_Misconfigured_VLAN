@@ -1,0 +1,36 @@
+## Level 6: VLAN Assignment & Port Security
+
+### Security Domain
+* **CompTIA Security+ (SY0-701) Mapping:** Domain 3.0 Hardware, Software, and Connectivity -> Objective 3.1 Explain objectives of infrastructure design -> Section on Virtual Local Area Networks (VLANs) and Segmentation.
+
+### The Objective
+The objective of this lab was to remediate a network isolation issue caused by a **VLAN Misconfiguration** at the switch port level. A host connected to Switch Port 19 was assigned to an incorrect logical segment (VLAN 30), preventing it from communicating with the rest of the production environment (VLAN 10) and resulting in a "VLAN Misconfigured" error.
+
+### Technical Methodology
+* **Logical Workflow:** 1. **Symptom Identification:** Detected a connectivity failure and a specific "VLAN Misconfigured" status alert for the host on Port 19.
+    2. **Infrastructure Audit:** Reviewed the "Switch" interface to compare the VLAN assignments of functional hosts versus the non-functional host.
+    3. **Fault Isolation:** Discovered that while the production network operates on **VLAN 10**, Port 19 was erroneously set to **VLAN 30**, isolating that port's traffic into a different broadcast domain.
+    4. **Remediation:** Reconfigured the switch port settings for Port 19, transitioning the access mode from VLAN 30 to **VLAN 10**.
+    5. **Verification:** Confirmed "Computer Connected" status, validating that the host can now send and receive traffic within the authorized production segment.
+
+* **Command Execution:**
+    In a standard enterprise environment (e.g., Cisco IOS), a Security Analyst or Network Engineer would perform the following steps via CLI to rectify the port assignment:
+    ```bash
+    # Enter configuration mode for the specific interface
+    Switch# configure terminal
+    Switch(config)# interface fastethernet 0/19
+
+    # Reassign the port to the correct VLAN
+    Switch(config-if)# switchport mode access
+    Switch(config-if)# switchport access vlan 10
+    Switch(config-if)# no shutdown
+    ```
+
+### The "Logic Gate"
+* **Rationale:** VLANs provide logical segmentation on a single physical switch. By segregating traffic into different VLAN IDs, we ensure that hosts can only communicate with other devices in their assigned group. When a port is assigned to the wrong ID, it is effectively placed behind a logical wall, losing access to shared resources like gateways, printers, or servers.
+* **Security Principles:**
+    * **Network Segmentation:** Proper VLAN management is essential for isolating sensitive departments (e.g., HR or Finance) from general guest traffic.
+    * **Blast Radius Reduction:** Correct VLAN tagging ensures that a compromise in one segment does not automatically spread to others.
+
+### Aerospace Precision Parallel
+> This is exactly like **Cross-Wiring a Wire Bundle** or an **Incorrect Pin-Out in a harness connector**. The physical connection (the cable/port) is plugged in, but the signal is being routed to the wrong system bus. Just as a flight computer won't receive data if its pin is routed to the lighting bus instead of the data bus, a computer won't "talk" if its logical path is routed to the wrong VLAN. Precision in port assignment ensures the right data reaches the right processor.
