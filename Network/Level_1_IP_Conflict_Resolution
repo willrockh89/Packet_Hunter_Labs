@@ -1,0 +1,33 @@
+## Level 1: Network Settings - IP Conflict Resolution
+
+### Security Domain
+* **CompTIA Security+ (SY0-701) Mapping:** Domain 3.0 Hardware/Infrastructure -> Objective 3.1 Explain objectives of infrastructure design -> Section on Addressing and IP Management.
+
+### The Objective
+The objective was to remediate a network availability issue caused by an **IP Address Conflict**. In this scenario, a static IP (192.168.1.100) was manually assigned to a host, creating a collision with another device on the local area network (LAN), resulting in intermittent or total loss of connectivity (Denial of Service).
+
+### Technical Methodology
+* **Logical Workflow:**
+    1. **Symptom Identification:** Detected an "IP conflict detected" error, indicating two devices on the same broadcast domain were competing for the same logical address.
+    2. **Configuration Analysis:** Observed that the host was configured with a manual/static IP (DHCP: Disabled). This is a common source of human error in network administration.
+    3. **Remediation:** Enabled the **Dynamic Host Configuration Protocol (DHCP)**.
+    4. **Verification:** The host successfully negotiated a new, unique IP address (192.168.1.50) from the DHCP server pool, confirmed by the "IP conflict resolved" status.
+
+* **Command Execution:**
+    In a Linux-based environment (such as Ubuntu), the transition from a static IP to DHCP via the command line would involve modifying the Netplan configuration or using `dhclient`:
+    ```bash
+    # Requesting a new IP lease from the DHCP server
+    sudo dhclient -v eth0
+
+    # Viewing the current interface status to verify the change
+    ip addr show eth0
+    ```
+
+### The "Logic Gate"
+* **Rationale:** DHCP automates the assignment of IP addresses, subnet masks, gateways, and DNS servers. By enabling DHCP, we shift the responsibility of address management to a centralized server, which maintains a stateful database of leases to prevent overlapping assignments.
+* **Security Principles:**
+    * **Availability:** Ensuring unique addressing is fundamental to network availability.
+    * **Operational Efficiency:** Automation via DHCP reduces the "human-in-the-loop" error rate associated with manual configuration.
+
+### Aerospace Precision Parallel
+> In aerospace maintenance, this is analogous to **Interchangeability and Cannibalization standards**. Just as two different aircraft components cannot occupy the same physical slot or use the same identifier in a maintenance log without causing a "Red X" grounding condition, two digital hosts cannot occupy the same logical IP. Utilizing DHCP is equivalent to using an automated Tool Control System (TCS) to track assets—it ensures every 'part' is accounted for and assigned to a unique, authorized location.
