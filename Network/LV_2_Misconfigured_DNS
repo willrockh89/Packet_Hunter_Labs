@@ -1,0 +1,33 @@
+## Level 2: DNS Misconfiguration & Service Restoration
+
+### Security Domain
+* **CompTIA Security+ (SY0-701) Mapping:** Domain 3.0 Hardware, Software, and Connectivity -> Objective 3.2 Explain hardware, software, and service solutions for network infrastructure (DNS).
+
+### The Objective
+The objective of this lab was to restore web connectivity by identifying and correcting a misconfigured **Domain Name System (DNS)** resolver. While the host maintained a valid local IP address, it was unable to resolve Fully Qualified Domain Names (FQDNs) to their respective IP addresses due to an incorrect DNS server assignment.
+
+### Technical Methodology
+* **Logical Workflow:** 1. **Initial Assessment:** Observed "Website Unreachable" status. 
+    2. **Configuration Audit:** Reviewed Network Settings to verify Layer 3 (IP) and Layer 4 (DNS) parameters.
+    3. **Fault Isolation:** Confirmed the host had a valid IP (192.168.1.100) but identified that the DNS server was incorrectly set to 8.8.8.8 for this specific environment.
+    4. **Remediation:** Manually updated the DNS resolver to the required address (8.8.4.4).
+    5. **Verification:** Confirmed "Website Accessible" status, indicating the resolution path between the client and the web server was restored.
+
+* **Command Execution:**
+    In a professional security environment, an analyst would use diagnostic tools like `nslookup` or `dig` to verify name resolution before manually editing configuration files:
+    ```bash
+    # Test name resolution against the specific server
+    nslookup google.com 8.8.4.4
+
+    # On a Linux system, manually update the resolver
+    echo "nameserver 8.8.4.4" | sudo tee /etc/resolv.conf
+    ```
+
+### The "Logic Gate"
+* **Rationale:** DNS acts as the "phonebook" of the internet. Even if the network hardware is functional, a system cannot navigate to a website using a name (e.g., example.com) if it cannot reach its designated DNS server. 
+* **Security Principles:**
+    * **Availability:** Ensuring the correct DNS path is vital for maintaining service availability.
+    * **Integrity of Configuration:** In a secure environment, "Function over Form" dictates that even a "standard" setting (like 8.8.8.8) is a failure if it does not match the specific architectural requirements of the organization.
+
+### Aerospace Precision Parallel
+> In aerospace maintenance, this is equivalent to referencing the **wrong Technical Order (TO)**. You might be performing the correct procedure (tightening a bolt), but if you are using the torque specs for an F-16 engine on an F-35 airframe, the system remains "unreachable" for flight. Precision requires matching the specific tool or setting (DNS) to the exact requirements of the mission-critical system.
