@@ -1,0 +1,34 @@
+## Level 4: Subnet Mask Misconfiguration (VLSM Issues)
+
+### Security Domain
+* **CompTIA Security+ (SY0-701) Mapping:** Domain 3.0 Hardware, Software, and Connectivity -> Objective 3.1 Explain objectives of infrastructure design -> Section on Subnetting and Segmentation.
+
+### The Objective
+The objective of this lab was to resolve a "No Network Connectivity" error caused by an incorrect **Subnet Mask**. The host was configured with a standard Class C mask (255.255.255.0), while the actual network infrastructure was designed using a more restrictive subnet (CIDR /26). This mismatch prevented the host from communicating with other devices and the switch within its designated segment.
+
+### Technical Methodology
+* **Logical Workflow:** 1. **Initial Assessment:** Observed a lack of connectivity despite having a valid IP (192.168.1.100).
+    2. **Infrastructure Audit:** Inspected the "Switch" configuration to identify the required network boundaries. 
+    3. **Fault Isolation:** Identified that the host's subnet mask was too broad. In a network utilizing Variable Length Subnet Masking (VLSM), the host must precisely match the network's bitmask to correctly calculate the network and broadcast addresses.
+    4. **Remediation:** Updated the Subnet Mask from 255.255.255.0 to **255.255.255.192** (a /26 mask).
+    5. **Verification:** Connectivity was restored immediately upon aligning the host's logic with the physical switch's configuration.
+
+* **Command Execution:**
+    On a professional workstation, this change would be applied via netplan or the `ifconfig` (legacy) / `ip` commands:
+    ```bash
+    # Manually setting the IP and Subnet Mask using CIDR notation
+    sudo ip addr add 192.168.1.100/26 dev eth0
+
+    # Verifying the subnet range and broadcast address
+    ip addr show eth0
+    ```
+
+### The "Logic Gate"
+* **Rationale:** The subnet mask defines the boundary between the "Network" portion and the "Host" portion of an IP address. If the mask is wrong, the host may believe a local device is on a remote network (or vice versa), leading to routing failures. Using a /26 mask (ending in .192) limits the subnet to 64 addresses, improving security through smaller, manageable segments.
+* **Security Principles:**
+    * **Network Segmentation:** Proper subnetting is the first step in segmenting a network to limit the blast radius of a potential breach.
+    * **Least Privilege (Network Level):** Restricting the size of a subnet ensures that only necessary hosts are within the same broadcast domain.
+
+### Aerospace Precision Parallel
+> This is comparable to an **incorrectly calibrated sensor threshold**. If a Pressure Relief Valve is designed to trigger at 192 PSI, but the monitoring system is programmed to look for a 255 PSI threshold (the "mask"), the system will fail to react correctly to local conditions. Precision in "masking" ensures that the system only acknowledges and operates within the specific design parameters intended by the engineers.
+
