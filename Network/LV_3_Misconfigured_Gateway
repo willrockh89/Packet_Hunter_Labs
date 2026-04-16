@@ -1,0 +1,34 @@
+## Level 3: Default Gateway Misconfiguration
+
+### Security Domain
+* **CompTIA Security+ (SY0-701) Mapping:** Domain 3.0 Hardware, Software, and Connectivity -> Objective 3.1 Explain objectives of infrastructure design -> Section on Routing and Gateway Management.
+
+### The Objective
+The objective of this lab was to troubleshoot a complete loss of external connectivity caused by an incorrect **Default Gateway** address. While the device was correctly addressed on the local subnet (192.168.1.100), it was attempting to route all traffic destined for external networks (the Internet) to a non-existent or incorrect egress point (192.168.1.1).
+
+### Technical Methodology
+* **Logical Workflow:** 1. **Initial Assessment:** Observed "No Internet Access" alert despite having a valid local IP address. 
+    2. **Route Table Analysis:** Audited the "Network Settings" to identify the egress path. 
+    3. **Fault Isolation:** Determined that the local gateway (192.168.1.1) was inconsistent with the actual network architecture provided by the "Router" module.
+    4. **Remediation:** Reconfigured the Default Gateway to the correct logical address: **192.168.1.254**.
+    5. **Verification:** Confirmed "Internet Connected" status, validating that the host can now successfully hand off packets to the edge router for wide-area network (WAN) transmission.
+
+* **Command Execution:**
+    In a professional Linux environment, an analyst would diagnose this using the `ip route` command and resolve it by updating the routing table:
+    ```bash
+    # View current routing table to find the 'default' route
+    ip route show
+
+    # Delete the incorrect gateway and add the correct one
+    sudo ip route del default via 192.168.1.1
+    sudo ip route add default via 192.168.1.254
+    ```
+
+### The "Logic Gate"
+* **Rationale:** The Default Gateway acts as the "exit door" for a network. If a packet's destination is not on the local subnet, the host sends it to the gateway. If the gateway address is incorrect, the packet is "dropped" or sent into a black hole, resulting in a total break in the communication chain.
+* **Security Principles:**
+    * **Availability:** Proper routing is a prerequisite for system availability and external resource access.
+    * **Network Integrity:** Ensuring hosts point to the *authorized* gateway prevents "Man-in-the-Middle" scenarios where traffic could be redirected to a rogue gateway for interception.
+
+### Aerospace Precision Parallel
+> This is a direct parallel to an **incorrectly rigged flight control cable**. You can move the control stick (input), and the local mechanism might move (local IP), but if the cable isn't connected to the correct bellcrank (gateway), the signal never reaches the elevators or ailerons (the external world). Precision in routing ensures the "pilot's" intent results in the "aircraft's" actual movement across boundaries.
